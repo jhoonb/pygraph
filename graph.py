@@ -3,9 +3,9 @@
 # Author: Jhonathan Paulo Banczek.
 # jhoonb.com - jpbanczek@gmail.com
 # Python 3 >
-# Data: 17-25/04/2014
-# Last Update: 28/04/2014
-# STATUS: ALPHA, NÃO COMPLETO. 
+# Data: 25/04/2014
+# Last Update: 01/05/2014
+# STATUS: Em desenvolvimento - 
 # --------------------- updates------------------------
 # 
 # add_node(): ok -> graph, weighted. 27/04/2014
@@ -21,7 +21,7 @@
 # del_node(): -> ok. 27/04/2014
 # complement() -> ok. 28/04/2014
 # is_complete(): desenvolvimento... 30/04/2014 ->
-# djakstra(): desenvolvimento... 01/04/2014 ->
+# djakstra(): desenvolvimento... 01/05/2014 ->
 # -------------------------TODO ------------------------
 # is_cicle:
 # is_bipartid:
