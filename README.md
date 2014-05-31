@@ -30,6 +30,7 @@ As funções realizadas, são:
 ================= Em execução =================
 - is_complete(): desenvolvimento... 30/04/2014 ->
 - djakstra(): desenvolvimento... 01/05/2014 ->
+
 ================= Pronto ======================
 - add_node(): ok -> graph, weighted. 27/04/2014
 - add_edge(): ok -> graph, weighted. 27/04/2014
