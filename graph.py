@@ -4,7 +4,7 @@
 # jhoonb.com - jpbanczek@gmail.com
 # Python 3 >
 # Data: 25/04/2014
-# Last Update: 01/05/2014
+# Last Update: 31/05/2014
 # STATUS: Em desenvolvimento -
 # -------- REFERENCIA ---------------------------------
 # http://en.wikipedia.org/wiki/Graph_theory
@@ -21,142 +21,126 @@ _error_ = { 0: 'Error [0]: Já existe o vértice no Grafo',
            4: 'Error [4]: w não é um valor válido',
            5: 'Error [5]: Não é um grafo ponderado.',
            7: 'Error [7]: Não existe essa aresta no grafo.',
-           8: 'Error [8]: Apenas Grafos Simples.'
+           8: 'Error [8]: Apenas Grafos Simples.',
+           9: 'Error [9]: Valor do vértice apenas do tipo str'
 }
 
 class Graph(object):
 
-    def __init__(self, id='Graph', typegraph='graph', digraph=False, weighted=False):
+    def __init__(self, name='Graph', typegraph='graph', weighted=False):
         """
         id: identificador do grafo (str)
         typegraph: 'graph', 'tree', 'hipergraph'
-        digraph: grafo direcionado -> digrafo (bool)
         weighted: grafo ponderado (bool)
         """
-        self._id = id
+        self._name = name
         self._typegraph = typegraph
-        self._digraph = digraph
         self._weighted = weighted
-        self._vtx = {}
-        self._edg = {}
+        self._node = {}
+        self._edge = {}
         
     
-    def exist_node(self, v, t='any'):
+    def exist_node(self, node, tp='any'):
         """
-        verifica se exist v(vertice) no grafo
-        v pode ser uma lista ou uma str
+        verifica se exist node(vertice) no grafo
+        tp-> type: all, any
         """
         
-        if isinstance(v, list):
-            v = [str(i) for i in v]
-            if t is 'any':
-                if any([i in self._vtx for i in v]):
+        if isinstance(node, list):
+            if tp is 'any':
+                if any([i in self._node for i in node]):
                     return True
             else:
-                if all([i in self._vtx for i in v]):
+                if all([i in self._node for i in node]):
                     return True
         else:
-            v = str(v)
-            if v in self._vtx:
+            if node in self._node:
                 return True
         
         return False
     
     
-    def exist_edge(self, e, t='any'):
+    def exist_edge(self, edge, tp='any'):
         """
-        verifica se exist e(aresta) no grafo
-        e pode ser uma lista ou uma str
+        verifica se exist edge(aresta) no grafo
+        edge pode ser uma lista ou uma str
         """
         
-        if isinstance(e, list):
-            e = [str(i) for i in e]
+        if isinstance(edge, list):
+            edge = [str(i) for i in edge]
             
-            if t is 'any':
-                if any([i in self._edg for i in e]):
+            if tp is 'any':
+                if any([i in self._edge for i in edge]):
                     return True
             else:
-                if all([i in self._edg for i in e]):
+                if all([i in self._edge for i in edge]):
                     return True
         else:
-            e = str(e)
-            if e in self._edg:
+            if edge in self._edge:
                 return True
         
         return False
-    
     
 
-    def add_node(self, v, w=None):
+    def add_node(self, node, weight=[0]):
         """
         Adiciona um vértice ao grafo.
         Retorna: bool.
         """
-
-        #se ja existe algum elemento de v no grafo
-        if self.exist_node(v):
-            print(_error_[0])
-            return False
         
-        #str elementos
-        v = [str(i) for i in v]
-
-        #verifica graph ponderado
-        if self._weighted:
-
-            #se algum elemento de w nao for numero retorna true
-            check = not any([isinstance(i, (int, float)) for i in w])
-
-            if len(v) == len(w) and check:
-                for i in range(len(v)):
-                    self._vtx[v[i]] = [v[i], w[i]]
-            else:
-                print(_error_[1])
-                return False
-        #graph simple
+        # apenas str
+        if isinstance(node, (int, float)):
+            node = str(node)
+        elif isinstance(node, list):
+            node = [str(i) for i in node]
         else:
-            for i in range(len(v)):
-                self._vtx[v[i]] = [v[i], None]
+            raise Exception(_error_[9])
+            
+        #se ja existe algum elemento de v no grafo
+        if self.exist_node(node):
+            raise Exception(_error_[0])
+        
+        if not self._weighted:
+            weight = [0 for i in node]
+            
+        #se algum elemento de weight nao for numero retorna true
+        check = all([isinstance(i, (int, float)) for i in weight])
+        
+        print(len(node), len(weight), check)
+        
+        if len(node) == len(weight) and check:
+            for i in range(len(node)):
+                self._node[node[i]] = [node[i], weight[i]]
+        else:
+            raise Exception(_error_[1])
 
-        return True
 
-
-    def add_edge(self, id, o, d, w=None):
+    def add_edge(self, edge, node_origin, node_destiny, weight=0):
         """
         Adiciona uma aresta ao grafo.
         retorno: bool.
         """
 
         # elementos str
-        o, d = str(o), str(d)
+        node_origin, node_destiny = str(node_origin), str(node_destiny)
 
-        # se for None cria o id
-        if id is None:
-            id = o+d
+        # se for None cria o e
+        if edge is None:
+            edge = node_origin + node_destiny
 
         # se a aresta ja existe no grafo
-        if self.exist_edge(id):
-            print(_error_[2])
-            return False
+        if self.exist_edge(edge):
+            raise Exception(_error_[2])
 
         #se os vértices n existem no grafo
-        if not self.exist_node([o, d], 'all'):
-            print(_error_[3])
-            return False
-
-        # se for grafo ponderado
-        if self._weighted:
-
-            # verifica o tipo de w
-            if isinstance(w, (int, float)):
-                self._edg[id] = [o, d, w]
-            else:
-                print(_error_[4])
-                return False
-        else:
-            self._edg[id] = [o, d, None]
+        if not self.exist_node([node_origin, node_destiny], 'all'):
+            raise Exception(_error_[3])
             
-        return True
+        # verifica o tipo de w
+        if isinstance(weight, (int, float)):
+            self._edge[edge] = [node_origin, node_destiny, weight]
+        else:
+            raise Exception(_error_[4])
 
 
     def show(self):
@@ -164,19 +148,18 @@ class Graph(object):
 
         print('*' * 60)
 
-        print('Graph id:' , self._id)
-        print(' -> Is Digraph: ', self._digraph)
+        print('Graph name:' , self._name)
         print(' -> Is Weighted: ', self._weighted)
         print(' -> Type Graph: ', self._typegraph)
         print('-' * 60)
 
         print('Nodes:','\n Id  |-|  Weight')
-        for i in self._vtx:
-            print(i, ': -> ', self._vtx[i])
+        for i in self._node:
+            print(i, ': -> ', self._node[i])
 
         print('Edges:', '\n Id  |-| Origin | Destiny | Weight')
-        for i in self._edg:
-            print(i, ': -> ', self._edg[i])
+        for i in self._edge:
+            print(i, ': -> ', self._edge[i])
 
         print('*' * 60)
 
@@ -185,88 +168,70 @@ class Graph(object):
         """
         retorna (int) a cadinalidade do conjunto de vértices
         """
-        return len(self._vtx)
+        return len(self._node)
 
 
     def size(self):
         """
         Retorna (int) a cardinalidade do conjunto de arestas.
         """
-        return len(self._edg)
+        return len(self._edge)
 
 
-    def update_node_w(self, id, w):
+    def update_node_weight(self, node, weight):
         """
         Atualiza o peso do vértice.
         retorno: bool.
         """
 
-        if not self._weighted:
-            print(_error_[5])
-            return False
+        #if not self._weighted:
+        #    raise Exception(_error_[5])
         
-        if not self.exist_node(id):
-            print(_error_[3])
-            return False
+        if not self.exist_node(node):
+            raise Exception(_error_[3])
 
         if not isinstance(w, (int, float)):
-            print(_error_[4])
-            return False
+            raise Exception(_error_[4])
 
-        self._vtx[id][1] = w
-
-        return True
+        self._node[node][1] = weight
 
 
-    def update_edge_w(self, id, w):
+    def update_edge_weight(self, edge, weight):
         """
         Atualiza o peso da aresta.
         retorno: bool.
         """
 
         #verifica se é um grafo ponderado
-        if not self._weighted:
-            print(_error_[5])
-            return False
+        #if not self._weighted:
+        #    raise Exception(_error_[5])
 
         #verifica se existe a aresta no grafo
-        if not self.exist_node(id):
-            print(_error_[7])
-            return False
+        if not self.exist_node(edge):
+            raise Exception(_error_[7])
 
-        #verifica se o tipo de w é válido
-        if not isinstance(w, (int, float)):
-            print(_error_[4])
-            return False
+        #verifica se o tipo de weight é válido
+        if not isinstance(weight, (int, float)):
+            raise Exception(_error_[4])
 
-        self._edg[id][2] = w
-
-        return True
+        self._edge[edge][2] = weight
 
 
-    def is_adjacent(self, x, w):
+    def is_adjacent(self, node_x, node_y):
         """
-        Retorna (bool) se o vértice x é adjacente
-        ao vértice w.
+        Retorna (bool) se o vértice node_x é adjacente
+        ao vértice node_y.
         """
 
         #verifica se os n vértices existem no grafo
-        if not self.exist_node([x, w], 'all'):
-            print(_error_[3])
-            return False  
+        if not self.exist_node([node_x, node_y], 'all'):
+            raise Exception(_error_[3])
 
-        #grafo simples
-        if not self._digraph:
-            for i in self._edg:
-                if self._edg[i][0] == x or self._edg[i][0] == w:
-                    if self._edg[i][1] == x or self._edg[i][1] == w:
-                        return True
-        #digrafo
-        else:
-            for i in self._edg:
-                if self._edg[i][0] == x and self._edg[i][1] == w:
+        for i in self._edge:
+            if self._edge[i][0] == node_x or self._edge[i][0] == node_y:
+                if self._edge[i][1] == node_x or self._edge[i][1] == node_y:
                     return True
-
+            
         return False
 
 
@@ -285,17 +250,17 @@ class Graph(object):
 
         # se for um digrafo
         if self._digraph:
-            for i in self._edg:
-                if self._edg[i][0] == x:
-                    out.append(self._edg[i][1])
+            for i in self._edge:
+                if self._edge[i][0] == x:
+                    out.append(self._edge[i][1])
 
         # se for grafo simples
         else:
-            for i in self._edg:
-                if self._edg[i][0] == x:
-                    out.append(self._edg[i][1])
-                elif self._edg[i][1] == x:
-                    out.append(self._edg[i][0])
+            for i in self._edge:
+                if self._edge[i][0] == x:
+                    out.append(self._edge[i][1])
+                elif self._edge[i][1] == x:
+                    out.append(self._edge[i][0])
 
         # se for vizinhança aberta
         if neighbourhood_open:
@@ -310,15 +275,11 @@ class Graph(object):
         Retorna (objeto: Graph) com o grafo complementar
         """
 
-        if self._digraph:
-            print(_error_[8])
-            return False
-
         # conjunto de vértices
-        vtx = [i for i in self._vtx]
+        vtx = [i for i in self._node]
 
         #conjunto de arestas
-        edg = [[self._edg[i][0], self._edg[i][1]] for i in self._edg]
+        edg = [[self._edge[i][0], self._edge[i][1]] for i in self._edge]
 
         # n. de arestas que faltam pra completar o grafo
         #tt = ((self.order() * (self.order() - 1))/2 ) - len(vtx)
@@ -337,7 +298,7 @@ class Graph(object):
         complement = [i for i in ttvtx if not _comp(i)]
 
         #cria um novo grafo
-        gc = Graph(id='Complement of '+self._id)
+        gc = Graph(id='Complement of '+self._name)
         #add os vértices
         gc.add_node(vtx)
         for i in complement:
@@ -345,31 +306,25 @@ class Graph(object):
 
         return gc
     
+    
     def complete(self):
         """
         retorna o grafo completo do grafo G
-        """
-        
-        #verifica se é um grafo simples
-        if not self._typegraph is 'graph':
-            print(_error_[8])
-            return False
-        
+        """        
         g_complement = self.complement()
         
         g_complete = Graph(id="K")
         
-        g_complete._vtx.update(self._vtx)
-        g_complete._vtx.update(g_complement._vtx)
+        g_complete._node.update(self._node)
+        g_complete._node.update(g_complement._node)
         
-        g_complete._edg.update(self._edg)
-        g_complete._edg.update(g_complement._edg)
+        g_complete._edge.update(self._edge)
+        g_complete._edge.update(g_complement._edge)
         
         g_complement = None
         
         return g_complete
         
-
 
     def is_complete(self):
         """
@@ -382,10 +337,10 @@ class Graph(object):
             return False
 
         # conjunto de vértices
-        vtx = [i for i in self._vtx]
+        vtx = [i for i in self._node]
 
         #conjunto de arestas
-        edg = [[self._edg[i][0], self._edg[i][1]] for i in self._edg]
+        edg = [[self._edge[i][0], self._edge[i][1]] for i in self._edge]
 
         # todas as combinações possiveis de arestas
         ttvtx = list(combinations(''.join(vtx), 2))
@@ -415,17 +370,17 @@ class Graph(object):
         edg = []
 
         # adiciona as arestas que serão excluidas
-        for i in self._edg:
-            if self._edg[i][0] == x or self._edg[i][1] == x:
+        for i in self._edge:
+            if self._edge[i][0] == x or self._edge[i][1] == x:
                 edg.append(i)
 
         #ignore spam
         # apaga as arestas que tinham relação com x
-        spam = [self._edg.pop(i) for i in edg]
+        spam = [self._edge.pop(i) for i in edg]
         spam, edg = None, None
 
         #deleta o vértice
-        del self._vtx[x]
+        del self._node[x]
 
         return True
 
@@ -441,7 +396,7 @@ class Graph(object):
             print(_error_[7])
             return False
 
-        del self._edg[xy]
+        del self._edge[xy]
 
         return True
 
@@ -452,5 +407,32 @@ class Graph(object):
         O Grafo tem que ser ponderado (conter pesos) e não pode ter
         pesos negativos.
         """
-        pass
+        pass 
+    
 #---------------------------------------------------------------------
+
+
+class Digraph(Graph, object):
+    
+    def __init__(self, name='Digraph', typegraph='graph', weighted=False):
+        Graph.__init__(self, name, typegraph, weighted)
+        
+    def is_adjacent(self, node_x, node_y):
+        
+        #verifica se os n vértices existem no grafo
+        if not self.exist_node([node_x, node_y], 'all'):
+            raise Exception(_error_[3])
+            
+        for i in self._edge:
+            if self._edge[i][0] == node_x and self._edge[i][1] == node_y:
+                return True
+            
+        return False
+    
+    
+    def complement(self):
+        raise Exception(_error_[8])
+    
+    
+    def complete(self):
+        raise Exception(_error_[8])
