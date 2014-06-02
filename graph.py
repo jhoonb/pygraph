@@ -4,7 +4,7 @@
 # jhoonb.com - jpbanczek@gmail.com
 # Python 3 >
 # Data: 25/04/2014
-# Last Update: 31/05/2014
+# Last Update: 02/06/2014
 # STATUS: Em desenvolvimento -
 # -------- REFERENCIA ---------------------------------
 # http://en.wikipedia.org/wiki/Graph_theory
@@ -67,7 +67,7 @@ class Graph(object):
         """
         
         if isinstance(edge, list):
-            edge = [str(i) for i in edge]
+            #edge = [str(i) for i in edge]
             
             if tp is 'any':
                 if any([i in self._edge for i in edge]):
@@ -183,9 +183,9 @@ class Graph(object):
         Atualiza o peso do vértice.
         retorno: bool.
         """
-
-        #if not self._weighted:
-        #    raise Exception(_error_[5])
+        
+        # str
+        node = str(node)
         
         if not self.exist_node(node):
             raise Exception(_error_[3])
@@ -201,10 +201,9 @@ class Graph(object):
         Atualiza o peso da aresta.
         retorno: bool.
         """
-
-        #verifica se é um grafo ponderado
-        #if not self._weighted:
-        #    raise Exception(_error_[5])
+        
+        #str
+        edge = str(edge)
 
         #verifica se existe a aresta no grafo
         if not self.exist_node(edge):
@@ -222,7 +221,10 @@ class Graph(object):
         Retorna (bool) se o vértice node_x é adjacente
         ao vértice node_y.
         """
-
+        
+        #str
+        node_x, node_y = str(node_x), str(node_y)
+        
         #verifica se os n vértices existem no grafo
         if not self.exist_node([node_x, node_y], 'all'):
             raise Exception(_error_[3])
@@ -235,38 +237,32 @@ class Graph(object):
         return False
 
 
-    def neighbourhood(self, x, neighbourhood_open=True):
+    def neighbourhood(self, node, neighbourhood_open=True):
         """
-        Retorna (list) a vizinhança do vértice x.
+        Retorna (list) a vizinhança do vértice node.
         neighbourhood_open: True -> vizinhança aberta, False: fechada.
         """
-
+        
+        #str
+        node = str(node)
+        
         #verifica se o vértice existe no grafo
-        if not self._node(x):
-            print(_error_[3])
-            return False
+        if not self.exist_node(node):
+            raise Exception(_error_[3])
 
         out = []
-
-        # se for um digrafo
-        if self._digraph:
-            for i in self._edge:
-                if self._edge[i][0] == x:
-                    out.append(self._edge[i][1])
-
-        # se for grafo simples
-        else:
-            for i in self._edge:
-                if self._edge[i][0] == x:
-                    out.append(self._edge[i][1])
-                elif self._edge[i][1] == x:
-                    out.append(self._edge[i][0])
+        
+        for i in self._edge:
+            if self._edge[i][0] == node:
+                out.append(self._edge[i][1])
+            elif self._edge[i][1] == node:
+                out.append(self._edge[i][0])
 
         # se for vizinhança aberta
         if neighbourhood_open:
             return out
         else:
-            out.insert(0, x)
+            out.insert(0, node)
             return out
 
 
@@ -276,31 +272,30 @@ class Graph(object):
         """
 
         # conjunto de vértices
-        vtx = [i for i in self._node]
+        nodes = [i for i in self._node]
 
         #conjunto de arestas
-        edg = [[self._edge[i][0], self._edge[i][1]] for i in self._edge]
-
-        # n. de arestas que faltam pra completar o grafo
-        #tt = ((self.order() * (self.order() - 1))/2 ) - len(vtx)
+        edges = [[self._edge[i][0], self._edge[i][1]] for i in self._edge]
 
         # todas as combinações possiveis de arestas
-        ttvtx = list(combinations(''.join(vtx), 2))
+        total_edges = list(combinations(''.join(nodes), 2))
         #tupla -> lista
-        ttvtx = [list(i) for i in ttvtx]
+        total_edges = [list(i) for i in total_edges]
 
         #lambda function: verifica se a aresta está no conjunto
         # se x0,x1 e x1,x0 (inverso)
-        _comp = lambda x: x in edg or [x[1], x[0]] in edg
+        _comp = lambda x: x in edges or [x[1], x[0]] in edges
 
         #conjunto de arestas que estão no grafo completo de G
         #e não estão em G
-        complement = [i for i in ttvtx if not _comp(i)]
+        complement = [i for i in total_edges if not _comp(i)]
 
         #cria um novo grafo
         gc = Graph(id='Complement of '+self._name)
+        
         #add os vértices
-        gc.add_node(vtx)
+        gc.add_node(nodes)
+        
         for i in complement:
             gc.add_edge(None, i[0], i[1], None)
 
@@ -355,48 +350,52 @@ class Graph(object):
         print(edg == ttvtx)
 
 
-    def del_node(self, x):
+    def del_node(self, node):
         """
-        deleta o vértice x do grafo.
-        consequentemente deleta as arestas que contem x.
+        deleta o vértice node do grafo.
+        consequentemente deleta as arestas que contem node.
         retorno: Bool
         """
-
+        
+        #str
+        node = str(node)
+        
         #verifica se o vértice existe no grafo
-        if not self._node(x):
-            print(_error_[3])
-            return False
+        if not self.exist_node(node):
+            raise Exception(_error_[3])
 
-        edg = []
+        edge = []
 
         # adiciona as arestas que serão excluidas
         for i in self._edge:
-            if self._edge[i][0] == x or self._edge[i][1] == x:
-                edg.append(i)
+            if self._edge[i][0] == node or self._edge[i][1] == node:
+                edge.append(i)
 
-        #ignore spam
-        # apaga as arestas que tinham relação com x
-        spam = [self._edge.pop(i) for i in edg]
-        spam, edg = None, None
+        # apaga as arestas que tinham relação com node
+        edge = [self._edge.pop(i) for i in edge]
+        edge = None
 
         #deleta o vértice
-        del self._node[x]
+        del self._node[node]
 
         return True
 
 
-    def del_edge(self, xy):
+    def del_edge(self, edge):
         """
-        deleta a aresta xy do grafo.
+        deleta a aresta edge do grafo.
         Retorno: Bool
         """
-
+        
+        #str
+        edge = str(edge)
+        
         #verifica se existe a aresta no grafo
-        if not self.exist_node(xy):
+        if not self.exist_node(edge):
             print(_error_[7])
             return False
 
-        del self._edge[xy]
+        del self._edge[edge]
 
         return True
 
@@ -417,6 +416,7 @@ class Digraph(Graph, object):
     def __init__(self, name='Digraph', typegraph='graph', weighted=False):
         Graph.__init__(self, name, typegraph, weighted)
         
+    
     def is_adjacent(self, node_x, node_y):
         
         #verifica se os n vértices existem no grafo
@@ -436,3 +436,33 @@ class Digraph(Graph, object):
     
     def complete(self):
         raise Exception(_error_[8])
+        
+        
+    def neighbourhood(self, node, neighbourhood_open=True):
+        """
+        Retorna (list) a vizinhança do vértice node.
+        neighbourhood_open: True -> vizinhança aberta, False: fechada.
+        """
+        
+        #str
+        node= str(node)
+        
+        #verifica se o vértice existe no grafo
+        if not self.exist_node(node):
+            raise Exception(_error_[3])
+
+        out = []
+        
+        for i in self._edge:
+            if self._edge[i][0] == node:
+                out.append(self._edge[i][1])
+                
+        # se for vizinhança aberta
+        if neighbourhood_open:
+            return out
+        else:
+            out.insert(0, node)
+            return out
+        
+#----------------------------------------------------------------------        
+        

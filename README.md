@@ -26,10 +26,11 @@ As funções realizadas, são:
 ================== A Fazer ====================
 - is_cicle:
 - is_bipartid:
-
+- comentar métodos!
 ================= Em execução =================
 - is_complete(): desenvolvimento... 30/04/2014 ->
 - djakstra(): desenvolvimento... 01/05/2014 ->
+- neighbourhood(): digraph, graph modificar
 
 ================= Pronto ======================
 - add_node(): ok -> graph, weighted. 27/04/2014
@@ -40,10 +41,9 @@ As funções realizadas, são:
 - is_adjacent() -> ok, digraph, graph. 27/04/2014
 - update_node_w() -> ok. 27/04/2014
 - update_edge_w() -> ok. 27/04/2014
-- neighbourhood(): -> ok. 27/04/2014
 - del_edge(): -> ok. 27/04/2014
 - del_node(): -> ok. 27/04/2014
-- complement() -> ok. 28/04/2014
+- complement() -> ok. 28/04/2014 graph e digraph
 - exist_node() -> ok. 31/05/2014
 - exist_edge() -> ok. 31/05/2014
 - complete() -> ok. 31/05/2014
