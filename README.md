@@ -13,6 +13,16 @@ Os grafos podem ser do tipo:
 
 - comentar metodos
 
+-- class Graph:
+    - is_isomorphic():
+    - dfs(): busca em profundidade
+    - bfs: busca em largura
+
+-- class Digraph:
+    - dfs(): busca em profundidade
+    - bfs: busca em largura
+    
+
 ================= Em execução =================
 
 -- class Graph:

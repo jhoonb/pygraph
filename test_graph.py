@@ -6,28 +6,22 @@
 #------------------------------------------------------
 
 from graph import Graph
+from graph import Digraph
 
-g = Graph(id='Grafo G')
+g = Graph(name='Grafo G')
 
 print("add vertices")
-g.add_node(['1', '2', '3', '4', '5'])
+g.add_node(['1','2','3','4', '5', '6', '7', '8', '9','10','11','12','13', 14])
 
 
 print("add edges")
-g.add_edge(None, '1', '2')
-g.add_edge(None, '1', '4')
-g.add_edge(None, '3', '5')
-g.add_edge(None, '4', '5')
-g.add_edge(None, '5', '2')
+for i in range(2,15):
+    g.add_edge(None, str(1), str(i), 0)
 
-g.show()
-print("*" * 68)
-
-gl = g.complement()
-
-gl.show()
-print("*" * 68)
-
-gc = g.complete()
+print('\ngrafo complemento...')
+gc = g.complement()
 gc.show()
-print("*" * 68)
+
+print('\ngrafo completo...')
+gcc = g.complete()
+gcc.show()

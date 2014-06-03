@@ -13,7 +13,6 @@
 
 from itertools import combinations
 
-
 _error_ = { 0: 'Error [0]: Já existe o vértice no Grafo',
            1: 'Error [1]: N. de vértices e n. de pesos não iguais',
            2: 'Error [2]: já existe essa aresta no grafo.',
@@ -27,25 +26,24 @@ _error_ = { 0: 'Error [0]: Já existe o vértice no Grafo',
 
 class Graph(object):
 
-    def __init__(self, name='Graph', typegraph='graph', weighted=False):
+    def __init__(self, name='Graph', weighted=False):
         """
         id: identificador do grafo (str)
-        typegraph: 'graph', 'tree', 'hipergraph'
         weighted: grafo ponderado (bool)
         """
         self._name = name
-        self._typegraph = typegraph
-        self._weighted = weighted
+        self.typegraph = 'graph'
+        self.weighted = weighted
         self._node = {}
         self._edge = {}
-        
-    
+
+
     def exist_node(self, node, tp='any'):
         """
         verifica se exist node(vertice) no grafo
         tp-> type: all, any
         """
-        
+
         if isinstance(node, list):
             if tp is 'any':
                 if any([i in self._node for i in node]):
@@ -56,19 +54,18 @@ class Graph(object):
         else:
             if node in self._node:
                 return True
-        
+
         return False
-    
-    
+
+
     def exist_edge(self, edge, tp='any'):
         """
         verifica se exist edge(aresta) no grafo
         edge pode ser uma lista ou uma str
         """
-        
+
         if isinstance(edge, list):
-            #edge = [str(i) for i in edge]
-            
+
             if tp is 'any':
                 if any([i in self._edge for i in edge]):
                     return True
@@ -78,16 +75,16 @@ class Graph(object):
         else:
             if edge in self._edge:
                 return True
-        
+
         return False
-    
+
 
     def add_node(self, node, weight=[0]):
         """
         Adiciona um vértice ao grafo.
         Retorna: bool.
         """
-        
+
         # apenas str
         if isinstance(node, (int, float)):
             node = str(node)
@@ -95,19 +92,17 @@ class Graph(object):
             node = [str(i) for i in node]
         else:
             raise Exception(_error_[9])
-            
+
         #se ja existe algum elemento de v no grafo
         if self.exist_node(node):
             raise Exception(_error_[0])
-        
-        if not self._weighted:
+
+        if not self.weighted:
             weight = [0 for i in node]
-            
+
         #se algum elemento de weight nao for numero retorna true
         check = all([isinstance(i, (int, float)) for i in weight])
-        
-        print(len(node), len(weight), check)
-        
+
         if len(node) == len(weight) and check:
             for i in range(len(node)):
                 self._node[node[i]] = [node[i], weight[i]]
@@ -135,7 +130,7 @@ class Graph(object):
         #se os vértices n existem no grafo
         if not self.exist_node([node_origin, node_destiny], 'all'):
             raise Exception(_error_[3])
-            
+
         # verifica o tipo de w
         if isinstance(weight, (int, float)):
             self._edge[edge] = [node_origin, node_destiny, weight]
@@ -149,8 +144,8 @@ class Graph(object):
         print('*' * 60)
 
         print('Graph name:' , self._name)
-        print(' -> Is Weighted: ', self._weighted)
-        print(' -> Type Graph: ', self._typegraph)
+        print(' -> Is Weighted: ', self.weighted)
+        print(' -> Type Graph: ', self.typegraph)
         print('-' * 60)
 
         print('Nodes:','\n Id  |-|  Weight')
@@ -183,10 +178,10 @@ class Graph(object):
         Atualiza o peso do vértice.
         retorno: bool.
         """
-        
+
         # str
         node = str(node)
-        
+
         if not self.exist_node(node):
             raise Exception(_error_[3])
 
@@ -201,7 +196,7 @@ class Graph(object):
         Atualiza o peso da aresta.
         retorno: bool.
         """
-        
+
         #str
         edge = str(edge)
 
@@ -221,10 +216,10 @@ class Graph(object):
         Retorna (bool) se o vértice node_x é adjacente
         ao vértice node_y.
         """
-        
+
         #str
         node_x, node_y = str(node_x), str(node_y)
-        
+
         #verifica se os n vértices existem no grafo
         if not self.exist_node([node_x, node_y], 'all'):
             raise Exception(_error_[3])
@@ -233,7 +228,7 @@ class Graph(object):
             if self._edge[i][0] == node_x or self._edge[i][0] == node_y:
                 if self._edge[i][1] == node_x or self._edge[i][1] == node_y:
                     return True
-            
+
         return False
 
 
@@ -242,16 +237,16 @@ class Graph(object):
         Retorna (list) a vizinhança do vértice node.
         neighbourhood_open: True -> vizinhança aberta, False: fechada.
         """
-        
+
         #str
         node = str(node)
-        
+
         #verifica se o vértice existe no grafo
         if not self.exist_node(node):
             raise Exception(_error_[3])
 
         out = []
-        
+
         for i in self._edge:
             if self._edge[i][0] == node:
                 out.append(self._edge[i][1])
@@ -271,55 +266,57 @@ class Graph(object):
         Retorna (objeto: Graph) com o grafo complementar
         """
 
-        # conjunto de vértices
-        nodes = [i for i in self._node]
-
         #conjunto de arestas
-        edges = [[self._edge[i][0], self._edge[i][1]] for i in self._edge]
+        edges = [(self._edge[i][0], self._edge[i][1]) for i in self._edge]
 
         # todas as combinações possiveis de arestas
-        total_edges = list(combinations(''.join(nodes), 2))
-        #tupla -> lista
-        total_edges = [list(i) for i in total_edges]
+        # arestas do grafo Completo.
+        total_edges = list(combinations([i for i in self._node], 2))
+        total_edges = [i for i in total_edges if not i[0] == i[1]]
 
-        #lambda function: verifica se a aresta está no conjunto
-        # se x0,x1 e x1,x0 (inverso)
-        _comp = lambda x: x in edges or [x[1], x[0]] in edges
+        #lambda function-> busca(x), se alguma aresta x(e sua inversa) for encontrada
+        # no conjunto edges de arestas retorna True
+        busca = lambda x: any([True for i in edges if i == x or (i[1],i[0]) == x])
 
-        #conjunto de arestas que estão no grafo completo de G
-        #e não estão em G
-        complement = [i for i in total_edges if not _comp(i)]
+        #compl -> conjunto de arestas do grafo complementar,
+        # arestas que nao estão no grafo G dado e estão no grafo Completo
+        compl = [i for i in total_edges if busca(i) is False]
 
         #cria um novo grafo
-        gc = Graph(id='Complement of '+self._name)
-        
+        gc = Graph(name='Complement of '+self._name)
+
         #add os vértices
-        gc.add_node(nodes)
-        
-        for i in complement:
-            gc.add_edge(None, i[0], i[1], None)
+        gc.add_node([i for i in self._node])
+
+        for i in compl:
+            gc.add_edge(None, i[0], i[1], 0)
 
         return gc
-    
-    
+
+
     def complete(self):
         """
         retorna o grafo completo do grafo G
-        """        
-        g_complement = self.complement()
-        
-        g_complete = Graph(id="K")
-        
-        g_complete._node.update(self._node)
-        g_complete._node.update(g_complement._node)
-        
-        g_complete._edge.update(self._edge)
-        g_complete._edge.update(g_complement._edge)
-        
-        g_complement = None
-        
+        """
+
+        #conjunto de arestas
+        edges = [(self._edge[i][0], self._edge[i][1]) for i in self._edge]
+
+        # todas as combinações possiveis de arestas
+        # arestas do grafo Completo.
+        total_edges = list(combinations([i for i in self._node], 2))
+        # menos as arestas com loop
+        total_edges = [i for i in total_edges if not i[0] == i[1]]
+
+        g_complete = Graph(name="Complete")
+
+        g_complete.add_node([i for i in self._node])
+
+        for i in total_edges:
+            g_complete.add_edge(None, i[0], i[1], 0)
+
         return g_complete
-        
+
 
     def is_complete(self):
         """
@@ -356,10 +353,10 @@ class Graph(object):
         consequentemente deleta as arestas que contem node.
         retorno: Bool
         """
-        
+
         #str
         node = str(node)
-        
+
         #verifica se o vértice existe no grafo
         if not self.exist_node(node):
             raise Exception(_error_[3])
@@ -386,10 +383,10 @@ class Graph(object):
         deleta a aresta edge do grafo.
         Retorno: Bool
         """
-        
+
         #str
         edge = str(edge)
-        
+
         #verifica se existe a aresta no grafo
         if not self.exist_node(edge):
             print(_error_[7])
@@ -406,63 +403,65 @@ class Graph(object):
         O Grafo tem que ser ponderado (conter pesos) e não pode ter
         pesos negativos.
         """
-        pass 
-    
+        pass
+
+
 #---------------------------------------------------------------------
 
 
 class Digraph(Graph, object):
-    
-    def __init__(self, name='Digraph', typegraph='graph', weighted=False):
-        Graph.__init__(self, name, typegraph, weighted)
-        
-    
+
+    def __init__(self, name='Digraph', weighted=False):
+        Graph.__init__(self, name, weighted)
+        self._typegraph = 'digraph'
+
+
     def is_adjacent(self, node_x, node_y):
-        
+
         #verifica se os n vértices existem no grafo
         if not self.exist_node([node_x, node_y], 'all'):
             raise Exception(_error_[3])
-            
+
         for i in self._edge:
             if self._edge[i][0] == node_x and self._edge[i][1] == node_y:
                 return True
-            
+
         return False
-    
-    
+
+
     def complement(self):
         raise Exception(_error_[8])
-    
-    
+
+
     def complete(self):
         raise Exception(_error_[8])
-        
-        
+
+
     def neighbourhood(self, node, neighbourhood_open=True):
         """
         Retorna (list) a vizinhança do vértice node.
         neighbourhood_open: True -> vizinhança aberta, False: fechada.
         """
-        
+
         #str
         node= str(node)
-        
+
         #verifica se o vértice existe no grafo
         if not self.exist_node(node):
             raise Exception(_error_[3])
 
         out = []
-        
+
         for i in self._edge:
             if self._edge[i][0] == node:
                 out.append(self._edge[i][1])
-                
+
         # se for vizinhança aberta
         if neighbourhood_open:
             return out
         else:
             out.insert(0, node)
             return out
-        
-#----------------------------------------------------------------------        
-        
+
+#----------------------------------------------------------------------
+
