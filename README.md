@@ -17,20 +17,24 @@ Os grafos podem ser do tipo:
     - is_isomorphic():
     - dfs(): busca em profundidade
     - bfs: busca em largura
+    - load(): carrega um grafo do arquivo
+    - save(): salva os dados do grafo em um arquivo
+    - line_graph():
 
 -- class Digraph:
     - dfs(): busca em profundidade
     - bfs: busca em largura
-    
+    k- load(): carrega um grafo do arquivo
+    - save(): salva os dados do grafo em um arquivo
 
 ================= Em execução =================
 
 -- class Graph:
-    - is_complete():
+
     - dijkstra():
+    
 
 -- class Digraph:
-    - is_complete():
     - dijkstra():
 
 ================= Pronto ======================
@@ -51,12 +55,14 @@ Os grafos podem ser do tipo:
     - exist_edge(): -> ok -> 31/05/2014
     - complete(): -> ok -> 31/05/2014
     - neighbourhood(): -> ok -> 02/06/2014
+    - is_complete():
 
 -- class Digraph:
     - is_adjacent() -> ok, digraph, graph. 27/04/2014
     - complement() -> ok. 28/04/2014 graph e digraph
     - complete() -> ok. 31/05/2014
     - neighbourhood(): ok - 02/06/2014
+    - is_complete():
 
 
 =================================================

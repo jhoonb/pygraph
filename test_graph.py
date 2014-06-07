@@ -10,18 +10,26 @@ from graph import Digraph
 
 g = Graph(name='Grafo G')
 
-print("add vertices")
-g.add_node(['1','2','3','4', '5', '6', '7', '8', '9','10','11','12','13', 14])
+g.add_node([1,2,3])
 
+g.add_edge(None, 1, 2)
 
-print("add edges")
-for i in range(2,15):
-    g.add_edge(None, str(1), str(i), 0)
+g.add_edge(None, 1, 3)
 
-print('\ngrafo complemento...')
-gc = g.complement()
-gc.show()
+g.add_edge(None, 2, 3)
 
-print('\ngrafo completo...')
-gcc = g.complete()
-gcc.show()
+print(g.is_complete())
+
+g.del_edge('13')
+
+print(g.is_complete())
+
+g.add_edge(None, 3, 3)
+
+print(g.is_complete())
+
+g.del_edge('33')
+
+g.add_edge(None, 1, 3)
+
+print(g.is_complete())
