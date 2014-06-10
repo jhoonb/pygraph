@@ -3,107 +3,78 @@ pygraph
 
 Pygraph is the simple libray for graph
 
-Os grafos podem ser do tipo:
+Class Graph:
 
-- Grafo (simples).
-- Digrafo.
-- Grafo Ponderado.
+- graph.py
 
-================== A Fazer ====================
+- digraph.py
 
-- comentar metodos
+=======
 
--- class Graph:
+Methods:
 
-    - is_isomorphic():
-
-    - dfs(): busca em profundidade
-
-    - bfs: busca em largura
-
-    - load(): carrega um grafo do arquivo
-
-    - save(): salva os dados do grafo em um arquivo
-
-    - line_graph():
-
--- class Digraph:
-
-    - dfs(): busca em prof undidade
-
-    - bfs: busca em largura
-
-    k- load(): carrega um grafo do arquivo
-
-    - save(): salva os dados do grafo em um arquivo
-
-
-================= Em execução =================
-
--- class Graph:
-
-    - dijkstra():
+- Graph():
     
+	- exist_node(node, tp)
 
--- class Digraph:
+	- exist_edge(edge, tp)
 
-    - dijkstra():
+	- add_node(node[, weight])
 
-================= Pronto ======================
+	- add_edge(edge, node_origin, node_destiny[, weight])
 
--- class Graph:
+	- order()
 
-    - add_node(): ok -> 27/04/2014
+	- size()
 
-    - add_edge(): ok -> 27/04/2014
+	- update_node_weight(node, weight)
 
-    - show(): -> ok -> 27/04/2014
+	- update_edge_weight(edge, weight)
 
-    - order(): -> ok -> 27/04/2014
+	- is_adjacent(node_x, node_y)
 
-    - size(): -> ok -> 27/04/2014
+	- neighbourhood(node[, neighbourhood_open=True])
 
-    - is_adjacent(): -> ok -> 27/04/2014
+	- complement()
 
-    - update_node_w(): -> ok -> 27/04/2014
+	- complete()
 
-    - update_edge_w(): -> ok -> 27/04/2014
+	- is_complete()
 
-    - del_edge(): -> ok -> 27/04/2014
+	- del_node(node)
 
-    - del_node(): -> ok -> 27/04/2014
+	- del_edge(edge)
 
-    - complement(): -> ok -> 28/04/2014
+- Digraph():
 
-    - exist_node(): -> ok -> 31/05/2014
+	- exist_node(node, tp)
 
-    - exist_edge(): -> ok -> 31/05/2014
+	- exist_edge(edge, tp)
 
-    - complete(): -> ok -> 31/05/2014
+	- add_node(node[, weight])
 
-    - neighbourhood(): -> ok -> 02/06/2014
+	- add_edge(edge, node_origin, node_destiny[, weight])
 
-    - is_complete():
+	- order()
 
--- class Digraph:
+	- size()
 
-    - is_adjacent() -> ok, digraph, graph. 27/04/2014
+	- update_node_weight(node, weight)
 
-    - complement() -> ok. 28/04/2014 graph e digraph
+	- update_edge_weight(edge, weight)
 
-    - complete() -> ok. 31/05/2014
+	- is_adjacent(node_x, node_y)
 
-    - neighbourhood(): ok - 02/06/2014
+	- neighbourhood(node[, neighbourhood_open=True])
 
-    - is_complete():
+	- del_node(node)
 
+	- del_edge(edge)
+=======
 
-Em breve, exemplos.
-=================
-
-STATUS = NÃO USAR - em desenvolvimento.
+STATUS = ALPHA ALPHA ALPHA VERSION
 
 ==
-Sugestões?
+Sugestions?
 
 jbanczek@gmail.com
