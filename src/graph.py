@@ -5,25 +5,56 @@
 jpbanczek@gmail.com -- jhoonb.com
 '''
 
+#not uncomment this!
+#ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE UNIVERSE_AND_EVERYTHING = 42
+
 from itertools import combinations
 
 '''
 @brief define errors
 '''
-_error_ = { 0: 'Error [0]: Já existe o vértice no Grafo',
-           1: 'Error [1]: N. de vértices e n. de pesos não iguais',
-           2: 'Error [2]: já existe essa aresta no grafo.',
-           3: 'Error [3]: Não existe esse vértice no grafo',
-           4: 'Error [4]: w não é um valor válido',
-           5: 'Error [5]: Não é um grafo ponderado.',
-           7: 'Error [7]: Não existe essa aresta no grafo.',
-           8: 'Error [8]: Apenas Grafos Simples.',
-           9: 'Error [9]: Valor do vértice apenas do tipo str'
+_error_ = { 0: 'Error [0]: There is already a node in the graph',
+           1: 'Error [1]: Length nodes and length weight not equal',
+           2: 'Error [2]: This edge exists in the graph',
+           3: 'Error [3]: There is no such node in the graph',
+           4: 'Error [4]: w is not a valid value',
+           5: 'Error [5]: Not a weighted graph',
+           7: 'Error [7]: No such edge exists in the graph',
+           8: 'Error [8]: Only simple graph',
+           9: 'Error [9]: Only the value of the node type str'
 }
 
 class Graph(object):
     '''
     @brief class Graph
+    -----------
+    attributes:
+    -----------
+    - _graph_id: (str)
+    - _typegraph: (str)-> graph, digraph
+    - weighted: (bool)->True, False
+    - _node: (dict)
+        _node = { 'node_id': [ weight, [] } where [] is adjacency list
+    - _edge: (dict)
+        _edge = {'edge_id': [[node_origin, node_destiny, weight]] }
+    --------
+    methods:
+    --------
+    - exist_node(node, tp)
+    - exist_edge(edge, tp)
+    - add_node(node[, weight])
+    - add_edge(edge, node_origin, node_destiny[, weight])
+    - order()
+    - size()
+    - update_node_weight(node, weight)
+    - update_edge_weight(edge, weight)
+    - is_adjacent(node_x, node_y)
+    - neighbourhood(node[, neighbourhood_open=True])
+    - complement()
+    - complete()
+    - is_complete()
+    - del_node(node)
+    - del_edge(edge)
     '''
 
     def __init__(self, graph_id='Graph', weighted=False):
@@ -31,19 +62,18 @@ class Graph(object):
         @param graph_id (str): id of graph
         @param weighted (bool): if graph is weighted
         '''
-        
+
         self._graph_id = graph_id
-        self.typegraph = 'graph'
+        self._typegraph = 'graph'
         self.weighted = weighted
         self._node = {}
         self._edge = {}
-        
-        
-        
+
+
     def exist_node(self, node, tp='any'):
         '''
         @brief Check if node(s) exist in graph
-        @param node (str | list): node 
+        @param node (str | list): node
         @param tp (str): 'any' | 'all' (default: any)
         @return (bool)
         '''
@@ -65,10 +95,10 @@ class Graph(object):
     def exist_edge(self, edge, tp='any'):
         '''
         @brief Check if edge(s) exist in graph
-        @param edge (str | list): edge 
+        @param edge (str | list): edge
         @param tp (str): 'any' | 'all' (default: any)
         @return (bool)
-        '''       
+        '''
 
         if isinstance(edge, list):
 
@@ -92,7 +122,6 @@ class Graph(object):
         @param weighted (list): weighted of the nodes
         is optional
         '''
-        
 
         # only str type
         if isinstance(node, (int, float)):
@@ -132,13 +161,21 @@ class Graph(object):
         node_origin = str(node_origin)
         node_destiny = str(node_destiny)
 
-        # create id edge
+        # create id edge if None
         if edge is None:
             edge = node_origin + node_destiny
+            flag = True
 
         # check if edge exist in graph
         if self.exist_edge(edge):
             raise Exception(_error_[2])
+        
+        # Only graph
+        if self._typegraph is 'graph':
+            if self.is_adjacent(node_origin, node_destiny) is True \
+            or self.is_adjacent(node_destiny, node_origin) is True:
+                raise Exception(_error_[2])
+                
 
         # check if nodes not exist in graph
         if not self.exist_node([node_origin, node_destiny], 'all'):
@@ -146,39 +183,20 @@ class Graph(object):
 
         # check weight type, only int or float
         if isinstance(weight, (int, float)):
-            
             self._edge[edge] = [node_origin, node_destiny, weight]
             # insert adjacency list
             self._node[node_origin][1].append(node_destiny)
+            # insert if digraph object
+            if self._typegraph is not 'digraph':
+                self._node[node_destiny][1].append(node_origin)
         else:
             raise Exception(_error_[4])
-
             
-    def show(self):
-        """ Exibe os vértices e arestas do grafo """
-
-        print('*' * 60)
-
-        print('Graph graph_id:' , self._graph_id)
-        print(' -> Is Weighted: ', self.weighted)
-        print(' -> Type Graph: ', self.typegraph)
-        print('-' * 60)
-
-        print('Nodes:','\n Id  |-|  Weight')
-        for i in self._node:
-            print(i, ': -> ', self._node[i])
-
-        print('Edges:', '\n Id  |-| Origin | Destiny | Weight')
-        for i in self._edge:
-            print(i, ': -> ', self._edge[i])
-
-        print('*' * 60)
-
 
     def order(self):
         '''
         @brief cardinality of the set of nodes
-        @return int
+        @return (int)
         '''
         return len(self._node)
 
@@ -186,16 +204,17 @@ class Graph(object):
     def size(self):
         '''
         @brief cardinality of the set of edges
-        @return int
+        @return (int)
         '''
         return len(self._edge)
 
 
     def update_node_weight(self, node, weight):
-        """
-        Atualiza o peso do vértice.
-        retorno: bool.
-        """
+        '''
+        @brief update the weight of the node
+        @param node (str)
+        @param weight (int | float)
+        '''
 
         # only str
         node = str(node)
@@ -210,211 +229,257 @@ class Graph(object):
 
 
     def update_edge_weight(self, edge, weight):
-        """
-        Atualiza o peso da aresta.
-        retorno: bool.
-        """
+        '''
+        @brief update weighted of edge
+        @param edge (str)
+        @param weight (int | float)
+        '''
 
-        #str
+        # only str
         edge = str(edge)
 
-        #verifica se existe a aresta no grafo
+        # check if nodes not exist in graph
         if not self.exist_node(edge):
             raise Exception(_error_[7])
 
-        #verifica se o tipo de weight é válido
+        # check weight type, only int or float
         if not isinstance(weight, (int, float)):
             raise Exception(_error_[4])
 
+        #update weight
         self._edge[edge][2] = weight
 
 
     def is_adjacent(self, node_x, node_y):
-        """
-        Retorna (bool) se o vértice node_x é adjacente
-        ao vértice node_y.
-        """
+        '''
+        @brief check if node_x is adjacent to node_y
+        @param node_x (str)
+        @param node_y (str)
+        @return (bool)
+        '''
 
-        #str
-        node_x, node_y = str(node_x), str(node_y)
+        #only str
+        node_x = str(node_x)
+        node_y = str(node_y)
 
-        #verifica se os n vértices existem no grafo
+        #check if nodes no exist in the graph
         if not self.exist_node([node_x, node_y], 'all'):
             raise Exception(_error_[3])
 
         if node_y in self._node[node_x][1] or node_x in self._node[node_y][1]:
             return True
-        
+
         return False
 
 
     def neighbourhood(self, node, neighbourhood_open=True):
-        """
-        Retorna (list) a vizinhança do vértice node.
-        neighbourhood_open: True -> vizinhança aberta, False: fechada.
-        """
+        '''
+        @brief neighbourhood of the node in the graph
+        @param node (str)
+        @param neighbourhood_open (bool): default (True)
+        @return (list)
+        '''
 
-        #str
+        # only str
         node = str(node)
 
-        #verifica se o vértice existe no grafo
+        # check if node not exist in the graph
         if not self.exist_node(node):
             raise Exception(_error_[3])
-            
+
         output = [i for i in self._node if self.is_adjacent(i, node)]
-        
-        #output = self._node[node][1]
-        
+
         if neighbourhood_open:
             return output
         else:
             output.insert(0, node)
             return output
-        
+
 
     def complement(self):
-        """
-        Retorna (objeto: Graph) com o grafo complementar
-        """
+        '''
+        @brief Generate graph complement of the graph
+        @return (Graph)
+        '''
+        
+        if self._typegraph is not 'graph':
+            raise Exception(_error_[8])
+            
+        # set nodes
+        nodes = [i for i in self._node]
+        # set edges of graph
+        edges = [tuple((self._edge[i][:2])) for i in self._edge]
+        # all combinations of edges
+        all_edges = list(combinations(nodes, 2))
+        # remove is loop
+        all_edges = [i for i in all_edges if not i[0] == i[1]]
+        # remove edges
+        all_edges = [i for i in all_edges if i not in edges]
+        # remove edges reverse
+        all_edges = [i for i in all_edges if (i[1], i[0]) not in edges]
+        # create a new object Graph()
+        gc = Graph(graph_id='Complement of ' + self._graph_id)
 
-        #conjunto de arestas
-        edges = [(self._edge[i][0], self._edge[i][1]) for i in self._edge]
+        # add the nodes
+        gc.add_node(nodes)
 
-        # todas as combinações possiveis de arestas
-        # arestas do grafo Completo.
-        total_edges = list(combinations([i for i in self._node], 2))
-        total_edges = [i for i in total_edges if not i[0] == i[1]]
-
-        #lambda function-> busca(x), se alguma aresta x(e sua inversa) for encontrada
-        # no conjunto edges de arestas retorna True
-        busca = lambda x: any([True for i in edges if i == x or (i[1],i[0]) == x])
-
-        #compl -> conjunto de arestas do grafo complementar,
-        # arestas que nao estão no grafo G dado e estão no grafo Completo
-        compl = [i for i in total_edges if busca(i) is False]
-
-        #cria um novo grafo
-        gc = Graph(graph_id='Complement of '+self._graph_id)
-
-        #add os vértices
-        gc.add_node([i for i in self._node])
-
-        for i in compl:
-            gc.add_edge(None, i[0], i[1], 0)
+        # add the edges
+        for i in all_edges:
+            gc.add_edge(None, i[0], i[1])
 
         return gc
 
 
     def complete(self):
-        """
-        retorna o grafo completo do grafo G
-        """
+        '''
+        @brief Generate graph complete of the graph
+        @return (Graph)
+        '''
+        
+        if self._typegraph is not 'graph':
+            raise Exception(_error_[8])
 
-        #conjunto de arestas
-        edges = [(self._edge[i][0], self._edge[i][1]) for i in self._edge]
-
-        # todas as combinações possiveis de arestas
-        # arestas do grafo Completo.
-        total_edges = list(combinations([i for i in self._node], 2))
-        # menos as arestas com loop
-        total_edges = [i for i in total_edges if not i[0] == i[1]]
-
+        # set nodes
+        nodes = [i for i in self._node]
+        # all combinations of edges
+        all_edges = list(combinations(nodes, 2))
+        # remove is loop
+        all_edges = [i for i in all_edges if not i[0] == i[1]]
+        # create graph object
         g_complete = Graph(graph_id="Complete")
+        # add nodes
+        g_complete.add_node(nodes)
 
-        g_complete.add_node([i for i in self._node])
-
-        for i in total_edges:
-            g_complete.add_edge(None, i[0], i[1], 0)
+        for i in all_edges:
+            g_complete.add_edge(None, i[0], i[1])
 
         return g_complete
 
-
+    
     def is_complete(self):
-        """
-        Retorna (bool) se o grafo é completo.
-        em desenvolvimento...
-        """
+        '''
+        @brief Check if graph is complete
+        @return (bool)
+        '''
         
-        edges = [(self._edge[i][0], self._edge[i][1]) for i in self._edge]
-        # todas as combinações possiveis de arestas
-        # arestas do grafo Completo.
-        total_edges = list(combinations([i for i in self._node], 2))
-        # menos as arestas com loop
-        total_edges = [i for i in total_edges if not i[0] == i[1]]
-        final = [i for i in total_edges if not i in edges and not (i[1],i[0]) in edges]
-        
-        if len(final) == 0:
+        if self._typegraph is not 'graph':
+            raise Exception(_error_[8])
+
+        # set edges
+        edges = [tuple(self._edge[i][:2]) for i in self._edge]
+        # all combinations of edges
+        all_edges = list(combinations([i for i in self._node], 2))
+        # remove is loop
+        all_edges = [i for i in all_edges if not i[0] == i[1]]
+        # get length of set
+        check = len([i for i in all_edges
+                 if i not in edges and (i[1], i[0]) not in edges])
+
+        if check == 0:
             return True
-        else:
-            return False
+        
+        return False
 
 
     def del_node(self, node):
-        """
-        deleta o vértice node do grafo.
-        consequentemente deleta as arestas que contem node.
-        retorno: Bool
-        """
+        '''
+        @brief Delete node from graph
+        @param node (str)
+        '''
 
-        #str
+        # only str
         node = str(node)
-
-        #verifica se o vértice existe no grafo
+        # check if not exist node in graph
         if not self.exist_node(node):
             raise Exception(_error_[3])
 
-        edge = [i for i in self._edge if node in self._edge[i][:2]]
-
-        # adiciona as arestas que serão excluidas
-        #for i in self._edge:
-        #    if self._edge[i][0] == node or self._edge[i][1] == node:
-        #        edge.append(i)
-
-        # apaga as arestas que tinham relação com node
-        edge = [self._edge.pop(i) for i in edge]
-        edge = None
-
-        #deleta o vértice
+        # set edges delete
+        edges = [i for i in self._edge if node in self._edge[i][:2]]
+        # delete edges
+        for i in edges:
+            self._edge.pop(i)
+            
+        _check = lambda x, y: x in self._node[y][1]
+        
+        # delete nodes of adjacency list
+        for i in self._node:
+            if _check(node, i):
+                self._node[i][1].remove(node)
+                
+        # delete node
         del self._node[node]
 
-        return True
-
-
+        
     def del_edge(self, edge):
-        """
-        deleta a aresta edge do grafo.
-        Retorno: Bool
-        """
+        '''
+        @brief delete edge of graph
+        @param node (str)
+        '''
 
-        #str
+        # only str
         edge = str(edge)
-
-        #verifica se existe a aresta no grafo
+        # check if node not exist in graph
         if not self.exist_edge(edge):
             raise Exception(_error_[7])
 
-        del self._edge[edge]
+        # set nodes
+        node_x, node_y = self._edge[edge][:2]
 
-        return True
+        _check = lambda x, y: x in self._node[y][1]
+        # delete node node_x of adjacency list
+        # delete node node_y of adjacency list
+        for i in self._node:
+            if _check(node_x, i):
+                self._node[i][1].remove(node_x)
+            if _check(node_y, i):
+                self._node[i][1].remove(node_y)
+
+        # delete edge
+        del self._edge[edge]
 
 
     def dijkstra(self, x, w):
+        '''
+        @brief
+        @param
+        @param
+        @return
+        '''
         """
         Algoritmo de Dijkstra para o menor caminho em um grafo.
         O Grafo tem que ser ponderado (conter pesos) e não pode ter
         pesos negativos.
         """
         pass
-    
-    
-    def dfs(self):
+
+
+    def dfs(self, node_x, node_y):
+        '''
+        @brief depth-first search
+        @param
+        @param
+        @return
+        '''
         pass
 
-        
-    def bfs(self):
+
+    def bfs(self, node_x, node_y):
+        '''
+        @brief breadth-first search
+        @param
+        @param
+        @return
+        '''
         pass
-    
+
+
     def line_graph(self):
+        '''
+        @brief line graph
+        @param
+        @param
+        @return
+        '''
         pass
 
-#---------------------------------------------------------------------
+
