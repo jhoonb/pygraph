@@ -1,7 +1,7 @@
 pygraph
 =======
 
-Pygraph is the simple libray for graph
+Pygraph is the simple library for graph
 
 Class Graph:
 
