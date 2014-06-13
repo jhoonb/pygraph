@@ -33,7 +33,7 @@ Methods:
 
 	- is_adjacent(node_x, node_y)
 
-	- neighbourhood(node[, neighbourhood_open=True])
+	- neighbourhood(node[, neighbourhood_open=True | False])
 
 	- complement()
 
@@ -44,6 +44,11 @@ Methods:
 	- del_node(node)
 
 	- del_edge(edge)
+
+	- depth_first_search(node[, debug=True | False]) 
+
+	- load(filename)
+
 
 - Digraph():
 
@@ -73,9 +78,41 @@ Methods:
 
 =======
 
-STATUS = ALPHA ALPHA ALPHA VERSION
 
+UPDATE
 ==
+
+File: graph.json (json with configuration for graph) 
+
+
+Class Graph:
+
+add method: 
+
+- depth_first_search(node[, debug=True | False]) 11/06/2014
+
+- load(filename) 13/06/2014
+
+
+TODO
+==
+
+Class Graph:
+
+- save(filename)
+
+
+Class Digraph:
+
+- save(filename)
+
+- load(filename)
+
+
+
+STATUS = ALPHA ALPHA ALPHA VERSION
+==
+
 Sugestions?
 
 jbanczek@gmail.com
