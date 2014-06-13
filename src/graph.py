@@ -9,6 +9,7 @@ jpbanczek@gmail.com -- jhoonb.com
 #ANSWER_TO_THE_ULTIMATE_QUESTION_OF_LIFE_THE UNIVERSE_AND_EVERYTHING = 42
 
 from itertools import combinations
+import json
 
 '''
 @brief define errors
@@ -453,17 +454,43 @@ class Graph(object):
         pass
 
 
-    def dfs(self, node_x, node_y):
+    def depth_first_search(self, node_x, debug=False):
         '''
         @brief depth-first search
-        @param
-        @param
-        @return
+        @param node_x (str)
+        @param debug (bool)
         '''
-        pass
+        
+        def _dfs(v):
+            
+            if debug:
+                print('\t-> Exploring: ', v)
+            
+            for w in self._node[v][1]:
+                if nd[w] is False:
+                    nd[w] = True
+                    if debug:
+                        print('-> Node: ', w, ' | visited')
+                    _dfs(w)
+        
+        # dict[nodes] = status visited (bool)
+        nd = {}
+        
+        # all False (visited)
+        for i in self._node:
+            nd[i] = False 
+        
+        # visited node_x
+        nd[node_x] = True
+        
+        if debug:
+            print('-> Node: ', node_x, ' | visited')
+            
+        #explore dfs v
+        _dfs(node_x)
+        
 
-
-    def bfs(self, node_x, node_y):
+    def bfs(self, node_x):
         '''
         @brief breadth-first search
         @param
@@ -479,6 +506,75 @@ class Graph(object):
         @param
         @param
         @return
+        '''
+        pass
+    
+    
+    def load(self, filename):
+        '''
+        @brief load configuration in .json
+        @param filename (str): name file
+        '''
+        
+        try:
+            fl = open(filename, 'r')
+            fl_graph = json.load(fl)
+            fl.close()
+        except:
+            raise Exception('Error in file read/write.')
+        
+        # check types
+        tps = ['graph', 'digraph']
+        if fl_graph['typegraph'] not in tps:
+            raise Exception("Only bool type in 'typegraph'.")
+
+        if not isinstance(fl_graph['weighted'], bool):
+            raise Exception("Only bool type in 'weighted'.")
+
+        if not isinstance(fl_graph['edge_id'], bool):
+            raise Exception("Only bool type in 'edge_id'.")
+
+        if not isinstance(fl_graph['nodes'], list):
+            raise Exception("Only list type in 'nodes'.")
+
+        if not isinstance(fl_graph['edges'], list):
+            raise Exception("Only list type in 'edges'.")
+
+        self._graph_id = fl_graph['graph_id']
+        self._typegraph = fl_graph['typegraph']
+        self._weighted = fl_graph['weighted']
+        edge_id = fl_graph['edge_id']
+        nodes = fl_graph['nodes']
+        edges = fl_graph['edges']
+
+        # reset values
+        self._node = {}
+        self._edge = {}
+
+        # add nodes
+        self.add_node(nodes)
+
+        # add edges
+        if self._weighted:
+            if edge_id:
+                for ed in edges:
+                    self.add_edge(ed[0], ed[1], ed[2], ed[3])
+            else:
+                for ed in edges:
+                    self.add_edge(None, ed[0], ed[1], ed[2])
+        else:
+            if edge_id:
+                for ed in edges:
+                    self.add_edge(ed[0], ed[1], ed[2])
+            else:
+                for ed in edges:
+                    self.add_edge(None, ed[0], ed[1])
+                 
+    
+    def save(self, filename):
+        '''
+        @brief load configuration in .json
+        @param filename (str): name file
         '''
         pass
 
