@@ -165,7 +165,6 @@ class Graph(object):
         # create id edge if None
         if edge is None:
             edge = node_origin + node_destiny
-            flag = True
 
         # check if edge exist in graph
         if self.exist_edge(edge):
@@ -502,12 +501,37 @@ class Graph(object):
 
     def line_graph(self):
         '''
-        @brief line graph
-        @param
-        @param
-        @return
+        @brief line graph L(G) -> G | complexity: O(n²)
+        @return (Graph)
         '''
-        pass
+        
+        gl = Graph(graph_id="L({})".format(self._graph_id))
+        
+        # create nodes
+        # nodes in V(L(G)) = E(G)
+        gl.add_node([i for i in self._edge])
+        
+        # E(L(V))
+        gl_edges = []
+        
+        # e and j element of E(G)
+        # x and y is nodes from extreme edes e
+        # condition: check if x and y exist in set E(G) AND
+        # [e, j] and [j, e] edges not in E(L(G))
+        for e in self._edge:
+            x, y = self._edge[e][:2]
+            for j in self._edge:
+                if j != e:
+                    if (x in self._edge[j][:2] \
+                    or y in self._edge[j][:2]) \
+                    and ([e, j] not in gl_edges and [j, e] not in gl_edges):
+                        gl_edges.append([e, j])
+                        
+        # add edges in gl -> E(L(G))
+        for i in gl_edges:
+            gl.add_edge(None, i[0], i[1])
+                                
+        return gl
     
     
     def load(self, filename):
@@ -573,9 +597,25 @@ class Graph(object):
     
     def save(self, filename):
         '''
-        @brief load configuration in .json
+        @brief save configuration in .json
         @param filename (str): name file
         '''
-        pass
+        
+        try:
+            fl = open(filename, 'w')
+            #fl_graph = json.load(fl)
+            #fl.close()
+        except:
+            raise Exception('Error in file read/write.')
+            
+        #
+        data = {}
+        data['graph_id'] = self._graph_id
+        data['typegraph'] = self._typegraph
+        data['weighted'] = str(self.weighted).lower()
+        data['edge_id'] = True
+        data['nodes'] = [i for i in self._node]
+        
+        
 
 
