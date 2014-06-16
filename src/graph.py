@@ -56,6 +56,7 @@ class Graph(object):
     - is_complete()
     - del_node(node)
     - del_edge(edge)
+    - line_graph()
     '''
 
     def __init__(self, graph_id='Graph', weighted=False):
@@ -599,6 +600,7 @@ class Graph(object):
         '''
         @brief save configuration in .json
         @param filename (str): name file
+        >>> DEV...
         '''
         
         try:
