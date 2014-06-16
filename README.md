@@ -49,6 +49,8 @@ Methods:
 
 	- load(filename)
 
+	- line_graph()
+
 
 - Digraph():
 
@@ -93,6 +95,7 @@ add method:
 
 - load(filename) 13/06/2014
 
+- line_graph() 16/06/2014
 
 TODO
 ==
@@ -108,9 +111,9 @@ Class Digraph:
 
 - load(filename)
 
+- line_graph()
 
-
-STATUS = ALPHA ALPHA ALPHA VERSION
+STATUS = ALPHA ALPHA VERSION
 ==
 
 Sugestions?
