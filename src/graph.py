@@ -57,6 +57,9 @@ class Graph(object):
     - del_node(node)
     - del_edge(edge)
     - line_graph()
+    - degree(node)
+    - degree_min()
+    - degree_max()
     '''
 
     def __init__(self, graph_id='Graph', weighted=False):
@@ -165,7 +168,7 @@ class Graph(object):
 
         # create id edge if None
         if edge is None:
-            edge = node_origin + node_destiny
+            edge = "{}-{}".format(node_origin, node_destiny)
 
         # check if edge exist in graph
         if self.exist_edge(edge):
@@ -208,8 +211,35 @@ class Graph(object):
         @return (int)
         '''
         return len(self._edge)
+    
+    
+    def degree(self, node):
+        '''
+        @brief Degree of node
+        @return (int)
+        '''
+        
+        return len(self.neighbourhood(node))
+    
+    
+    def degree_max(self):
+        '''
+        @brief value of degree of node max in the Graph
+        @return (int)
+        '''
+        
+        return max([len(self.neighbourhood(i)) for i in self._node])
+    
+    
+    def degree_min(self):
+        '''
+        @brief value of degree of node min in the Graph
+        @return (int)
+        '''
+        
+        return min([len(self.neighbourhood(i)) for i in self._node])
 
-
+    
     def update_node_weight(self, node, weight):
         '''
         @brief update the weight of the node
@@ -353,6 +383,11 @@ class Graph(object):
 
         for i in all_edges:
             g_complete.add_edge(None, i[0], i[1])
+            
+        # check theorem
+        check = (g_complete.order() * (g_complete.order() - 1))/2
+        if g_complete.size() != check:
+            raise Exception("bug... RLY")
 
         return g_complete
 
